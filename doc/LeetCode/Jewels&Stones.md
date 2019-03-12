@@ -20,7 +20,7 @@ class Solution {
     public int numJewelsInStones(String J, String S) {
         Set<Character> set = new HashSet();//Space complexity O(n)
         int count = 0;
-        for(char c : J.toCharArray()){//O(n)
+        for(char c : J.toCharArray()){ //O(n)
             set.add(c);
         }
         for(char d : S.toCharArray()){ //O(n)

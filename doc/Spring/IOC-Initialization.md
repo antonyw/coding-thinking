@@ -1,4 +1,4 @@
-# Spring 容器初始化
+# Spring IOC 容器初始化
 ## 概述
 IOC 容器的初始化过程分为三步骤：Resource 定位、BeanDefinition 的载入和解析，BeanDefinition 注册。
 ![](../../img/spring-ioc-init-flow.png)

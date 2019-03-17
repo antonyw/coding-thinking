@@ -2,7 +2,7 @@
 ## Description
 Find the sum of all left leaves in a given binary tree.
 
-Example
+### Example
 <br>
 &nbsp;&nbsp;&nbsp;&nbsp;3 <br>
 &nbsp;&nbsp;&nbsp;/&nbsp;&nbsp;\ <br>

@@ -24,14 +24,18 @@ Note :Length of the array will not exceed 10,000.
 ```java
 class Solution {
     public int findLengthOfLCIS(int[] nums) {
-        int res = 0, cnt = 0;
-        for(int i = 0; i < nums.length; i++){
-            if(i == 0 || nums[i-1] < nums[i]) 
-                res = Math.max(res, ++cnt);
-            else 
-                cnt = 1;
+        if (nums.length < 2) return nums.length;
+        int result = 1;
+        int tempRes = 1;
+        for (int i = 1; i < nums.length; i++) {
+            if (nums[i] > nums[i - 1]) {
+                tempRes++;
+            } else {
+                result = Math.max(result, tempRes);
+                tempRes = 1;
+            }
         }
-        return res;
+        return result == tempRes ? result : (Math.max(result, tempRes));
     }
 }
 ```

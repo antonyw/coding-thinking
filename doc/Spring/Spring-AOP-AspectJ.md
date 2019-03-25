@@ -16,7 +16,7 @@ AOP 技术则非常适合这种操作，它可以剖开封装的对象内部，�
 1. 动态代理，在内存中的对象生成之前，截取对象创建代理，使代理对象取代原有对象来执行后续操作。
 2. 静态织入，通过某种工具介入代码的编译期，直接修改原有的类。
 
-由此可以看出，即使只有main方法来启动的程序，只要合理的实现动态代理，是可以做到AOP效果的。同样，如果使用某种编译器来替代 javac 编译器，也可以做到AOP效果。
+由此可以看出，即使只有main方法来启动的程序，**只要合理的实现动态代理或者修改编译器**，是可以做到AOP效果的。同样，如果使用某种编译器来替代 javac 编译器，也可以做到AOP效果。
 
 ## Spring 提供了两种 AOP 支持
 1. Schema-based AOP Support
@@ -152,4 +152,11 @@ Object bean = resolveBeforeInstantiation(beanName, mbdToUse);
 如果获取到了代理对象，则直接返回代理对象，不执行 doCreateBean 方法了。
 
 ## 结论
+Spring 官方文档中说到
+>Spring AOP never strives to compete with AspectJ to provide a comprehensive AOP solution. We believe that both proxy-based frameworks such as Spring AOP and full-blown frameworks such as AspectJ are valuable and that they are complementary, rather than in competition. 
+
+>Spring AOP从未努力与AspectJ竞争，以提供更全面的AOP解决方案。我们认为，基于代理的框架（如Spring AOP）和完整的框架（如AspectJ）都很有价值，而且它们是互补的，而不是竞争。
+
+Spring同时也支持Full AspectJ 框架中Load-time weaving (LTW) 织入方式。如果有兴趣可以参考Spring 和 AspectJ 的文档。
+
 至此就是 Spring AOP 实现原理的分析和 AspectJ 实现原理的简单说明。通过代码分析不难看出，Spring AOP 实际上是基于动态代理的方式实现，但它使用了 AspectJ 的语法来定义切面，使得编码更加清晰。

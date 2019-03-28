@@ -10,7 +10,7 @@
 1. [微服务的优点](./doc/Architecture/Advantages-of-Using-Microservices.md)
 
 ## :card_file_box: Kafka
-1. [Kafka 简介](./doc/Kafka/01-Kafka-intro.md)
+1. [Kafka 简介](./doc/Kafka/01-Kafka-Intro.md)
 
 ## :package: Spring
 1. [IOC 容器的初始化](./doc/Spring/IOC-Initialization.md)

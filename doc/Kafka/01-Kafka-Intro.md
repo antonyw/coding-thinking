@@ -14,7 +14,7 @@ Parition是物理上的概念，每个Topic包含一个或多个Partition。
 
 ---
 
-![](../../img/Kafka01.webp)
+![](../../img/Kafka01.png)
 
 一个典型的Kafka集群中包含若干Producer（可以是web前端产生的Page View，或者是服务器日志，系统CPU、Memory等），若干broker（Kafka支持水平扩展，一般broker数量越多，集群吞吐率越高），若干Consumer Group，以及一个Zookeeper集群。Kafka通过Zookeeper管理集群配置，选举leader，以及在Consumer Group发生变化时进行rebalance。Producer使用push模式将消息发布到broker，Consumer使用pull模式从broker订阅并消费消息。
 
@@ -23,7 +23,7 @@ Topic在逻辑上可以被认为是一个queue，每条消费都必须指定它�
 
 Kafka将新消息追加到Partition中，属于顺序写磁盘，因此效率非常高，这也就是为什么Kafka的吞吐量如此之高的原因之一。
 
-![](../../img/Partition.webp)
+![](../../img/Partition.png)
 
 传统的消息队列通常会删除已被消费的消息，而Kafka并不会这么做，无论是否被消费该消息都会保存。Kafka通过offset这个偏移量来指示这个queue中的消息消费到了何处。
 

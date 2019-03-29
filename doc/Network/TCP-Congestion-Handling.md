@@ -63,3 +63,8 @@
 
 ### 算法示意图
 ![](../../img/tcp.fr_-900x315.jpg)
+
+#### 参考资料
+*https://coolshell.cn/articles/11564.html*
+
+*https://coolshell.cn/articles/11609.html*

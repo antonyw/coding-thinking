@@ -22,6 +22,10 @@ Note :Length of the array will not exceed 10,000.
 
 ## Solution
 ```java
+/**
+* Runtime: 2 ms
+* Beats 97.82% of java submissions at 03-23-2019
+**/
 class Solution {
     public int findLengthOfLCIS(int[] nums) {
         if (nums.length < 2) return nums.length;

@@ -58,3 +58,8 @@ Producer发送消息到broker时，会根据Paritition机制选择将其存储�
 上面我们了解到，offset是由Consumer控制的，所以如果消费者失败并且我们希望该topic partition 被另一个进程接管，则新进程将需要选择适当的位置以开始处理。在此情况下，我们看一下Consumer该如何读新消息：
 1. 读取消息 - 保存position - 处理消息：**如果Consumer在保存position后处理消息之前宕机**，那么新的进程接管之后，将从该position开始处理，尽管它之前的一些消息尚未处理，这对应于 At most once 语义，因为消息可能会丢失。
 2. 读取消息 - 处理消息 - 保存position：**如果Consumer在处理消息后保存position之前宕机**，那么新的进程接管之后，将重复处理之前的消息（由于唯一ID的存在，所以可以正常的做幂等处理），这对应于 At least once 语义。
+
+### 参考资料
+http://kafka.apache.org/20/documentation.html#design
+
+http://www.jasongj.com/2015/03/10/KafkaColumn1/

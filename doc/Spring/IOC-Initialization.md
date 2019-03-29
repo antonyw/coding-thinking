@@ -20,3 +20,6 @@ reader.loadBeanDefinitions(resource);
 ```
 ## 流程概览
 ![](../../img/spring-load-bean.png)
+
+### 参考资料
+http://cmsblogs.com/

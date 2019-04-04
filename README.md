@@ -6,6 +6,9 @@
 3. [ThreadPool参数详解](./doc/Java/ThreadPool-Param.md)
 4. [JDK1.7 的Hashmap 扩容时可能出现死循环](./doc/Java/Why-rehash()-Cause-Infinite-Loop-in-JDK7.md)
 
+## :game_die: Java Virtual Machine
+1. [JVM 运行时数据区域](./doc/JVM/01-Runtime-Data-Area.md)
+
 ## :building_construction: 架构
 1. [微服务的优点](./doc/Architecture/Advantages-of-Using-Microservices.md)
 

@@ -15,6 +15,7 @@
 ## :package: Spring
 1. [IOC 容器的初始化](./doc/Spring/IOC-Initialization.md)
 2. [Spring AOP解析](./doc/Spring/Spring-AOP-AspectJ.md)
+3. [Spring Boot 如何做到自动配置](./doc/Spring/How-does-SpringBoot-Work.md)
 
 ## :globe_with_meridians: 网络协议
 1. [TCP概览](./doc/Network/TCP.md)

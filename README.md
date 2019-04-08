@@ -5,6 +5,7 @@
 2. [序列化](./doc/Java/Serialization.md)
 3. [ThreadPool参数详解](./doc/Java/ThreadPool-Param.md)
 4. [JDK1.7 的Hashmap 扩容时可能出现死循环](./doc/Java/Why-rehash()-Cause-Infinite-Loop-in-JDK7.md)
+5. [线上故障排查](./doc/Java/Online-problem.md)
 
 ## :game_die: Java Virtual Machine
 1. [JVM 运行时数据区域](./doc/JVM/01-Runtime-Data-Area.md)

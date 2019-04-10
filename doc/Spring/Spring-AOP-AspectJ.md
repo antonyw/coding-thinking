@@ -4,7 +4,7 @@
 **其实不然 Spring AOP ≠ AspectJ，不如我们先了解一下AOP到底是什么。**
 
 ## 什么是AOP ？
-**AOP 可以说是OOP（Object-Oriented Programing，面向对象编程）的补充和，OOP中模块化的关键单元是类，而在AOP中，模块化单元是切面。** OOP引入了多态概念来建立一种对象层次结构，用来模拟基于父对象公共行为的一个集合。当我们需要为**分散的对象**引入公共行为的时候，OOP则显得无能为力了。也就是说，OOP允许你定义从上到下的关系，但不适合定义从左到右的关系。**例如日志功能，打印日志的代码可能出现在多个类中，而这些类的可能毫无关系，这种代码通常被称为“横切代码”。**
+**AOP 可以说是OOP（Object-Oriented Programing，面向对象编程）的补充，OOP中模块化的关键单元是类，而在AOP中，模块化单元是切面。** OOP引入了多态概念来建立一种对象层次结构，用来模拟基于父对象公共行为的一个集合。当我们需要为分散的对象引入公共行为的时候，OOP则显得无能为力了。也就是说，OOP允许你定义从上到下的关系，但不适合定义从左到右的关系。例如日志功能，打印日志的代码可能出现在多个类中，而这些类的可能毫无关系，这种代码通常被称为“横切代码”。
 
 AOP 技术则非常适合这种操作，它可以剖开封装的对象内部，将我们需要的代码切入其中。简单地说，就是将那些与业务无关，却为业务模块所共同调用的逻辑或责任封装起来，便于减少系统的重复代码，降低模块间的耦合度，并有利于未来的可操作性和可维护性。
 
@@ -118,7 +118,7 @@ protected Object createBean(beanName, mbd, args) {
 
 第二个主要是提供javax包下的一些注解的支持，暂且不讲。
 
-第一个 InstantiationAwareBeanPostProcessor 是一个接口，它有一个很重要的实现类 AbstractAutoProxyCreator。这个类中有一个 postProcessBeforeInstantiation @Override方法，其中核心是调用了一个 **createProxy** 方法。
+第一个 **SmartInstantiationAwareBeanPostProcessor** 是一个接口，它有一个很重要的实现类 **AbstractAutoProxyCreator**。这个类中有一个 postProcessBeforeInstantiation @Override方法，其中核心是调用了一个 **createProxy** 方法。
 ```java
 /**
  * 为给定的bean 创建 AOP 代理
@@ -139,6 +139,18 @@ protected Object createProxy(beanName, specificInterceptors, targetSource) {
 }
 ```
 对于 advisor 的深入我们暂且略过，可以简单的认为它是“将某个动作切入到某个point的代码的抽象”。
+
+ProxyFactory 最后调用到了 AopProxy 中的 getProxy 方法。
+```java
+public interface AopProxy {
+	Object getProxy();
+
+	Object getProxy(@Nullable ClassLoader classLoader);
+}
+```
+AopProxy 是一个接口，它又两个实现类。
+
+![](../../img/Spring-AOP01.png)
 
 getProxy 方法根据传入不同的 classloader 调用了两个不同类中的 getProxy 方法，这两个类的名字看到大家就一目了然。分别是 **JdkDynamicAopProxy** 和 **CglibAopProxy 。**
 

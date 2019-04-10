@@ -148,7 +148,7 @@ public interface AopProxy {
 	Object getProxy(@Nullable ClassLoader classLoader);
 }
 ```
-AopProxy 是一个接口，它又两个实现类。
+AopProxy 是一个接口，它有两个实现类。
 
 ![](../../img/Spring-AOP01.png)
 

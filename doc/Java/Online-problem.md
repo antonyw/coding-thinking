@@ -40,10 +40,3 @@
 4. jmap或jcmd dump文件的时候触发FGC
 5. CMS Promotion failed / concurrent mode failure
 6. JVM基于悲观策略认为这次 YGC 后老年代区无法容纳晋升的对象，因此取消 YGC ，提前FGC
-
-
-
-
-
-
-

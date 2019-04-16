@@ -1,4 +1,4 @@
-# Kafka 架构
+# Kafka 架构设计
 ### Broker
 Kafka集群包含一个或多个服务器，这种服务器被称为broker。
 ### Topic
@@ -11,8 +11,6 @@ Parition是物理上的概念，每个Topic包含一个或多个Partition。
 消息消费者，向Kafka broker读取消息的客户端。
 ### Concumer Group
 每个Consumer属于一个特定的Consumer Group（可为每个Consumer指定group name，若不指定group name则属于默认的group）。
-
----
 
 ![](../../img/kafka01.png)
 
@@ -33,10 +31,10 @@ Kafka将新消息追加到Partition中，属于顺序写磁盘，因此效率非
 
 这个offset由Consumer控制，正常情况下Consumer在消费一条消息后递增该offset，但Consumer也可以干预offset的设置，这样便可以消费历史消息。不难发现，这么操作的好处是对于broker来说，消息是无状态的，它不需要标记哪些消息被消费过，无状态也就无需加锁。这便是Kafka高吞吐量原因之二。
 
-## Producer 消息路由
+### Producer 消息路由
 Producer发送消息到broker时，会根据Paritition机制选择将其存储到哪一个Partition。如果Partition机制设置合理，所有消息可以均匀分布到不同的Partition里，这样就实现了负载均衡。如果一个Topic对应一个文件，那这个文件所在的机器I/O将会成为这个Topic的性能瓶颈，而有了Partition后，不同的消息可以并行写入不同broker的不同Partition里，极大的提高了吞吐率。
 
-## Consumer Group
+### Consumer Group
 同一Topic的一条消息只能被同一个Consumer Group内的一个Consumer消费，但多个Consumer Group可同时消费这一消息。这是Kafka实现一个Topic消息的广播和单播的手段。
 
 ## 送达保证

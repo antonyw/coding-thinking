@@ -18,11 +18,11 @@ AOP 技术则非常适合这种操作，它可以剖开封装的对象内部，�
 
 由此可以看出，即使只有main方法来启动的程序，**只要合理的实现动态代理或者修改编译器**，是可以做到AOP效果的。同样，如果使用某种编译器来替代 javac 编译器，也可以做到AOP效果。
 
-## Spring 提供了两种 AOP 支持
+### Spring 提供了两种 AOP 支持
 1. Schema-based AOP Support
 2. @AspectJ Support
 
-### Schema-based
+#### Schema-based
 Spring 提供了一个新的XML命名空间aop，以此来定义AOP中的一些操作，例如：
 ```xml
 <aop:aspect id="beforeExample" ref="aBean">
@@ -32,7 +32,7 @@ Spring 提供了一个新的XML命名空间aop，以此来定义AOP中的一些�
 </aop:aspect>
 ```
 
-### @AspectJ
+#### @AspectJ
 ```java
 @Configuration
 @EnableAspectJAutoProxy

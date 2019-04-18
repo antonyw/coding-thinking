@@ -54,10 +54,8 @@ Kafka 通过 producer 配置中的一个参数 acks 来解决如何折中的问�
 ### Controller
 Controller 其实就是一个 broker，只不过除了一般 broker 的功能之外，还负责 partition 的 leader 选举。集群里第一个启动的 broker 通过在 zookeeper 里创建一个临时节点 /controller 让自己成为 Controller。其他 broker 启动时也尝试创建这个节点，不过它们会收到一个“节点已存在”的异常，这时候它们会在 /controller 节点上创建 zookeeper watch 对象，这样它们就可以收到这个节点的变更通知。
 
+如果 controller 被关闭或与 zookeeper 断开连接，zookeeper 上的临时节点就会消失。集群里的其他 broker 通过 watch 对象得到控制节点消失的通知，它们会尝试让自己成为新的 controller 节点。
+
 当 controller 发现一个 broker 已经离开集群，它就知道哪些分区随着这个 broker 的离开而丢失了 leader。controller 遍历这些分区，并确定谁应该成为新 leader，然后向所有包含新 leader 或现有 follower 的 broker 发送请求。该请求包含了谁是新 leader 以及谁是 follower 的信息。
 
 ## 选举算法
-
-
-如果 controller 被关闭或与 zookeeper 断开连接，zookeeper 上的临时节点就会消失。集群里的其他 broker 通过 watch 对象得到控制节点消失的通知，它们会尝试让自己成为新的 controller 节点。
-

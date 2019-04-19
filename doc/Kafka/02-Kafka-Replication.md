@@ -59,3 +59,15 @@ Controller 其实就是一个 broker，只不过除了一般 broker 的功能之
 当 controller 发现一个 broker 已经离开集群，它就知道哪些分区随着这个 broker 的离开而丢失了 leader。controller 遍历这些分区，并确定谁应该成为新 leader，然后向所有包含新 leader 或现有 follower 的 broker 发送请求。该请求包含了谁是新 leader 以及谁是 follower 的信息。
 
 ## 选举算法
+选举算法需要解决一个很重要的问题，就是当 leader 宕机后应该选出那个拥有原来 leader commit 的所有消息的 follower，这样才能保证消息不丢失。
+
+Kafka在Zookeeper中为每一个partition动态的维护了一个ISR，这个ISR里的所有replica都跟上了leader，只有ISR里的成员才能有被选为leader的可能（unclean.leader.election.enable=false）。在这种模式下，对于f+1个副本，一个Kafka topic能在保证不丢失已经commit消息的前提下容忍f个副本的失败。
+
+## 某个 partition 的 replica 全部宕机
+这种情况下有两种可行的方案：
+1. 等待ISR中任意一个replica“活”过来，并且选它作为leader
+2. 选择第一个“活”过来的replica（并不一定是在ISR中）作为leader
+
+这就需要在可用性和一致性当中作出一个简单的抉择。如果一定要等待ISR中的replica“活”过来，那不可用的时间就可能会相对较长。而且如果ISR中所有的replica都无法“活”过来了，或者数据丢失了，这个partition将永远不可用。选择第一个“活”过来的replica作为leader,而这个replica不是ISR中的replica,那即使它并不保障已经包含了所有已commit的消息，它也会成为leader而作为consumer的数据源。
+
+默认情况下 Kafka 采用第二种策略，即unclean.leader.election.enable=true （开启不完全选举）。

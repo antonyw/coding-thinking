@@ -71,3 +71,9 @@ Kafka在Zookeeper中为每一个partition动态的维护了一个ISR，这个ISR
 这就需要在可用性和一致性当中作出一个简单的抉择。如果一定要等待ISR中的replica“活”过来，那不可用的时间就可能会相对较长。而且如果ISR中所有的replica都无法“活”过来了，或者数据丢失了，这个partition将永远不可用。选择第一个“活”过来的replica作为leader,而这个replica不是ISR中的replica,那即使它并不保障已经包含了所有已commit的消息，它也会成为leader而作为consumer的数据源。
 
 默认情况下 Kafka 采用第二种策略，即unclean.leader.election.enable=true （开启不完全选举）。
+
+### 参考资料
+- [Kafka 官方文档(2.0.x)](http://kafka.apache.org/20/documentation.html)
+
+- 《Kafka 权威指南》	作者：Neha Narkhede / Gwen Shapira / Todd Palino
+

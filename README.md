@@ -17,6 +17,7 @@
 
 ## :card_file_box: Kafka
 1. [Kafka 架构设计](./doc/Kafka/01-Kafka-Intro.md)
+2. [Kafka 复制功能](./doc/Kafka/02-Kafka-Replication.md)
 
 ## :package: Spring
 1. [IOC 容器的初始化](./doc/Spring/IOC-Initialization.md)

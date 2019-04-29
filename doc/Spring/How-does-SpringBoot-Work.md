@@ -88,3 +88,6 @@ SpringApplication 将一个典型的 Spring 应用启动的流程“模板化”
 SpringApplication.run(DemoApplication.class,args);
 ```
 针对于特殊需求，SpringApplication 在合适的流程节点开放了一系列不同类型的扩展点，我们可以通过这些扩展点对程序的启动和关闭过程进行扩展。
+
+### 参考资料
+- 《Spring Boot 揭秘》作者：王福强

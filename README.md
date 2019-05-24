@@ -11,6 +11,7 @@
 1. [JVM 运行时数据区域](./doc/JVM/01-Runtime-Data-Area.md)
 2. [JVM 垃圾回收](./doc/JVM/02-GC.md)
 3. [CMS & G1](./doc/JVM/03-CMS-G1.md)
+4. [类加载机制](./doc/JVM/04-Classloader.md)
 
 ## :building_construction: 架构
 1. [微服务的优点](./doc/Architecture/Advantages-of-Using-Microservices.md)

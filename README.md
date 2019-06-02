@@ -22,7 +22,7 @@
 2. [Kafka 复制功能](./doc/Kafka/02-Kafka-Replication.md)
 
 ## :package: Spring
-1. [IOC 容器的初始化](./doc/Spring/IOC-Initialization.md)
+1. [Spring IOC 容器的初始化](./doc/Spring/IOC-Initialization.md)
 2. [Spring AOP 如何实现？与AspectJ什么关系？](./doc/Spring/Spring-AOP-AspectJ.md)
 3. [Spring Boot 如何做到自动配置](./doc/Spring/How-does-SpringBoot-Work.md)
 

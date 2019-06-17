@@ -25,3 +25,12 @@
 它允许应用程序开发人员在任何环境中使用一致的编程模型。你只需编写一次代码，就可以从不同环境中的不同事务管理策略中受益。
 
 与此同时，Spring 提供了声明式和编程式事务管理。
+
+## Spring 事务抽象层
+PlatformTransactionManager 是事务抽象架构的核心接口，既然是接口那么它就是为应用程序提供统一的界定方式。在接口内部很简洁的定义了三个函数。
+```java
+TransactionStatus getTransaction(TransactionDefinition def);
+void commit(TransactionStatus status);
+void rollback(TransactionStatus status);
+```
+该接口有一个默认的抽象实现类AbstractPlatformTransactionManager，打开这个抽象实现类就能看到它的子类是各个数据访问框架的支持类，其中包括jdbc、hibernate、jta等等。

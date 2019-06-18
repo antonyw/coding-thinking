@@ -76,6 +76,7 @@ isExistingTransaction默认返回false，该方法的具体实现由子类覆写
 事务处理完成有两种情况，回滚事务或者提交事务。rollback和commit两个方法对应了这两种情况。
 
 **Rollback**
+
 rollback的逻辑大致有以下3点：回滚事务、触发Synchronization事件、清理事务资源。
 
 **回滚事务：**
@@ -93,6 +94,7 @@ triggerBeforeCompletion和triggerAfterCompletion会被触发。
 3. 调用doCleanupAfterCompletion清理资源，并解除资源绑定；对于DSTM来说，就是关闭数据库，并解除对datasource对应资源的绑定。
 
 **Commit**
+
 commit操作的核心逻辑也是通过doCommit方法交由子类实现，对于DSTM来说，就是connection.commit。同时，commit也会触发trigger事件，commit的结尾也会涉及清理资源。
 
 ## 核心思想

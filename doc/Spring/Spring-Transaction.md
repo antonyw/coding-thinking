@@ -55,9 +55,55 @@ Object transaction = doGetTransaction();
 ```
 doGetTransaction 是一个抽象方法，需要子类来实现，也就是说获取的transactionObject会因子类的不同而的不同。但APTM不需要知道具体什么类型，因为在模板方法模式中，后续的调用都通过参数传递，只要后续的操作中子类自己知道是什么类型即可。
 
-以DataSourceTransactionManager（**以下简称DSTM**）为例，它的doGetTransaction实现中有一个很重要的逻辑，从TransactionSynchronizationManager中获取绑定的资源，然后添加到DSTM之后返回。之后我们会讲为什么讲资源绑定到线程上。
+以DataSourceTransactionManager（**以下简称DSTM**）为例，它的doGetTransaction实现中有一个很重要的逻辑，从TransactionSynchronizationManager中获取绑定的资源，然后添加到DSTM之后返回。之后我们会讲为什么要做资源绑定。
 
 #### 2.definition检查
 如果definition参数为空，则创建一个DefaultTransactionDefinition实例已提供默认事务定义数据。
 
-#### 3.
+#### 3.事务处理
+首先根据先前获得的transaction object判断是否存在当前事务，根据判定结果采取不同的处理方式
+```java
+if (isExistingTransaction(transaction)) {
+    // Existing transaction found -> check propagation behavior to find out how to behave.
+	return handleExistingTransaction(definition, transaction, debugEnabled);
+}
+```
+isExistingTransaction默认返回false，该方法的具体实现由子类覆写。其实不管isExistingTransaction的返回值如何，下面的代码都是基于definition中定义的事务传播级别的不同，处理当前事务是应该加入之前的事务，还是新开启一个事务。
+
+这个过程中有一个doBegin方法，上面讲到它也是抽象方法，需要由子类来实现。在DSTM中，该方法的逻辑会首先检查传入的transaction object是否存在绑定的connection。如果没有，则从datasource中获取新的connection，然后将其AutoCommit设为false，并绑定到TransactionSynchronizationManager。之后newTransactionStatus会创建一个包含definition、transaction object以及挂起的事务信息和其他状态信息的DataTransactionStatus并返回。
+
+#### 4.事务处理完成
+事务处理完成有两种情况，回滚事务或者提交事务。rollback和commit两个方法对应了这两种情况。
+
+##### Rollback
+rollback的逻辑大致有以下3点：回滚事务、触发Synchronization事件、清理事务资源。
+
+**回滚事务：**
+
+1. 如果是嵌套事务，则通过TransactionStatus释放SavaPoint；
+2. 如果TransactionStatus表示当前事务是一个新事务，则调用子类doRollback方法。对于DSTM这个实现类来说，其实就是调用了connection.rollback；
+3. 如果要参与一个已经存在的事务，则调用子类doSetRollbackOnly方法，子类的实现会保证transaction object的状态设置为rollbackOnly。
+
+**触发Synchronization事件：**
+triggerBeforeCompletion和triggerAfterCompletion会被触发。
+
+**清理事务资源：**
+1. 设置TransactionStatus中的completed为完成状态；
+2. 清理与当前事务相关的Synchronization;
+3. 调用doCleanupAfterCompletion清理资源，并解除资源绑定；对于DSTM来说，就是关闭数据库，并解除对datasource对应资源的绑定。
+
+##### Commit
+commit操作的核心逻辑也是通过doCommit方法交由子类实现，对于DSTM来说，就是connection.commit。同时，commit也会触发trigger事件，commit的结尾也会涉及清理资源。
+
+## 核心思想
+前面说到了很多资源绑定解绑的操作，究竟为什么需要绑定资源？
+
+其实不难理解，在传统的JDBC代码中，JDBC的局部事务控制是通过一个java.sql.Connection来完成的。Spring要通过声明式或编程式的事务将多个数据库操作融合进一个事务里，那么只需要将多个操作共享一个connection，并把autocommit属性设为false即可。
+
+讲下来是不是发现这里的connection资源使用方式似曾相识，就像我们常用的线程，那或许可以存在一个类似线程池的组件，把所有connection都放到一个地方，无论是谁要使用该资源，都从这里获取。通俗点讲，我们事务开始之前取得一个connection，然后将connection绑定到当前调用线程。之后，数据访问都使用这同一个connection。当所有数据访问操作结束之后，使用这个connection进行事务提交或回滚。最后再接触connection和线程的绑定关系。
+
+文章开头就说到Spring为我们提供了一个一致性的编程模型，这个模型的核心思想就是**让事务管理的关注点与数据访问的关注点相分离。** 而connection的复用正是实现这种模型的关键一步，因为我们在编写业务代码的时候不再需要显式的注入connection，只需要在关键位置从统一位置获取同一个connection进行复用即可，实现了高效率解耦。
+
+### 参考资料
+- [Spring官方文档](https://docs.spring.io/spring/docs/5.1.8.RELEASE/spring-framework-reference/)
+- 《Spring 揭秘》作者：王福强

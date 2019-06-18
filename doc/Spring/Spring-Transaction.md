@@ -27,7 +27,7 @@
 
 与此同时，Spring 提供了声明式和编程式事务管理。
 
-## Spring 事务抽象层
+### Spring 事务抽象层
 PlatformTransactionManager 是事务抽象架构的核心接口，既然是接口那么它就是为应用程序提供统一的界定方式。在接口内部很简洁的定义了三个函数。
 ```java
 TransactionStatus getTransaction(TransactionDefinition def);
@@ -40,6 +40,24 @@ void rollback(TransactionStatus status);
 1. 判定是否存在当前事务，然后根据判断结果执行不同的处理逻辑；
 2. 根据TransactionDefinition中定义的事务传播级别执行后续逻辑；
 3. 根据情况挂起或者恢复事务；
-4. 提交事务之前检查readonly字段是否被设置，如果是的话，以事务的回滚代替事务提交；
+4. 提交事务之前检查rollbackOnly字段是否被设置，如果是的话，以事务的回滚代替事务提交；
 5. 在事务回滚的情况下，清理并恢复事务状态；
 6. 如果事务的Synchonization处于active状态，在事务处理的规定时点触发注册的Synchonization回调接口。
+
+### Spring 事务多子类实现
+上述逻辑基本分布于这几个方法中：getTransaction / rollback / commit / suspend / resume
+
+从getTransaction开始看，它的主要目的是开启一个事务，但需要在此之前判断一下是否已经存在了一个事务。如果存在，则需要根据定义的传播级别决定是挂起当前事务还是抛出异常。接下来我们看一下该方法的具体逻辑。
+
+#### 1.该方法的第一行代码
+```java
+Object transaction = doGetTransaction();
+```
+doGetTransaction 是一个抽象方法，需要子类来实现，也就是说获取的transactionObject会因子类的不同而的不同。但APTM不需要知道具体什么类型，因为在模板方法模式中，后续的调用都通过参数传递，只要后续的操作中子类自己知道是什么类型即可。
+
+以DataSourceTransactionManager（**以下简称DSTM**）为例，它的doGetTransaction实现中有一个很重要的逻辑，从TransactionSynchronizationManager中获取绑定的资源，然后添加到DSTM之后返回。之后我们会讲为什么讲资源绑定到线程上。
+
+#### 2.definition检查
+如果definition参数为空，则创建一个DefaultTransactionDefinition实例已提供默认事务定义数据。
+
+#### 3.

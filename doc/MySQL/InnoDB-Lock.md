@@ -42,12 +42,52 @@ select MAX(auto_inc_col) from t for update
 ## 锁算法
 InnoDB引擎有三种**行锁算法**：
 
-1. Recoder Lock
-2. Gap Lock
-3. Next-Key Lock
+1. Record Lock 行记录锁
+2. Gap Lock 间隙锁
+3. Next-Key Lock 临键锁
 
 RL总是会去锁住索引记录，如果表在建立的时候没有设置任何一个索引，那么InnoDB会使用隐式主键来进行锁定。
 
 GL会锁定一个范围，但不包括记录本身。
 
-NL是结合了GL和RL的锁算法，这个算法的初衷是为了解决 Phantom Problem（幻象问题）。它不止锁定一个范围，还会锁定记录本身。
+NKL是结合了GL和RL的锁算法，这个算法的初衷是为了解决 Phantom Problem（幻象问题）。它不止锁定一个范围，还会锁定记录本身。
+
+**注意：三种锁算法都是针对索引记录的。**
+
+## 说了这么多，它们到底怎么用？
+众所周知，InnoDB支持四种事务隔离级别：
+1. Read Uncommitted
+2. Read Committed
+3. Repeated Read
+4. Serializeble
+
+四种事务隔离级别从上到下，依次升级，依次解决了更多一致性的问题。不妨我们把一致性问题先简单的理解为“读-改-读”的模式，如果一致性做的足够好，那么两次读应该读到相同的数据。下面我们以这个模型进行更详细的说明。
+
+引用很久之前看到的一句话：
+> 不同事务的隔离级别，实际上是一致性与并发性的一个权衡与折衷。
+
+**不同的锁策略是实现不同的事务隔离的核心。**
+
+### Read Uncommited
+这是一致性最差的事务隔离级别，该级别下默认select不加锁。而且select可以读取到尚未提交的信息，也就产生了“脏读”。
+
+### Read Committed
+该级别下默认select使用快照读，因此在update尚未提交的时候，select读取到的信息是不会变的，因此解决了“脏读”问题。
+
+对于加锁select、update、delete，大部分情况下都使用行记录锁（Record Lock）。因此，假如执行
+```sql 
+select * from t where id > 5 for update;
+```
+结果有1，2，4。
+
+在该select事务尚未提交时，另一个事务insert了一个3，那么该事务再执行一次相同的select查询到的结果有1，2，3，4。这就是我们说的 Phantom Problem，也有的资料里称作“不可重复读”。
+
+### Repeated Read
+该级别下默认select使用快照读，因此在update尚未提交的时候，select读取到的信息是不会变的，因此也能解决了“脏读”问题。
+
+对于加锁select、update、delete，它们如何加锁取决于是否在唯一索引上使用了唯一查询条件，或范围查询条件。
+- **存在唯一索引且使用了唯一查询条件**，会使用记录锁(record lock)，而不会封锁记录之间的间隔，即不会使用间隙锁(gap lock)与临键锁(next-key lock)。
+- **范围查询条件**，会使用间隙锁(gap lock)与临键锁(next-key lock)，锁住索引记录之间的范围，避免范围间插入记录，以避免产生幻影行记录，以及避免不可重复的读。
+
+### Serializeble
+该级别下默认select也都会携带“lock in share mode”，所以即便是读操作也会阻塞其他操作，固能保证很好的一致性，但同时也牺牲了并发性。

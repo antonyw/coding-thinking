@@ -91,3 +91,6 @@ select * from t where id > 5 for update;
 
 ### Serializeble
 该级别下默认select也都会携带“lock in share mode”，所以即便是读操作也会阻塞其他操作，固能保证很好的一致性，但同时也牺牲了并发性。
+
+---
+**不难看出，我们常说的ACID中的I（隔离性）在InnoDB中是由锁来实现的。**

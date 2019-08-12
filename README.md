@@ -16,6 +16,7 @@
 ## :building_construction: 架构
 1. [微服务的优点](./doc/Architecture/Advantages-of-Using-Microservices.md)
 2. [Eureka 工作原理](./doc/Architecture/Eureka-Intro.md)
+3. [大规模服务演进](./doc/Architecture/Server-Architecture.md)
 
 ## :card_file_box: Kafka
 1. [Kafka 架构设计](./doc/Kafka/01-Kafka-Intro.md)

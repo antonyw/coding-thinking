@@ -1,5 +1,4 @@
 <h1 align = "center">Coding & Thinking</h1>
-
 ## :coffee: Java
 1. [重载和重写](./doc/Java/Overload.md)
 2. [序列化](./doc/Java/Serialization.md)
@@ -21,6 +20,7 @@
 ## :card_file_box: Kafka
 1. [Kafka 架构设计](./doc/Kafka/01-Kafka-Intro.md)
 2. [Kafka 复制功能](./doc/Kafka/02-Kafka-Replication.md)
+3. [面试官：是否遇到过Kafka丢失消息的情况？](./doc/Kafka/03-Kafka-Lost-Msg.md)
 
 ## :package: Spring
 1. [Spring IOC 容器的初始化](./doc/Spring/IOC-Initialization.md)

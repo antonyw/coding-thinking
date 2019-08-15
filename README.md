@@ -6,6 +6,7 @@
 3. [ThreadPool参数详解](./doc/Java/ThreadPool-Param.md)
 4. [Hashmap 多线程扩容问题](./doc/Java/Why-rehash()-Cause-Infinite-Loop-in-JDK7.md)
 5. [线上故障排查](./doc/Java/Online-problem.md)
+6. [一张表格读懂final和static究竟做了什么](./doc/Java/Final-And-Static.md)
 
 ## :game_die: Java Virtual Machine
 1. [JVM 运行时数据区域](./doc/JVM/01-Runtime-Data-Area.md)

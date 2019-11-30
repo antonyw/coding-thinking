@@ -26,7 +26,7 @@
 3. [面试官：是否遇到过Kafka丢失消息的情况？](./doc/Kafka/03-Kafka-Lost-Msg.md)
 
 ## :package: Spring
-1. [Spring IOC 容器的初始化](./doc/Spring/IOC-Initialization.md)
+1. [简述Spring IOC 容器的初始化](./doc/Spring/IOC-Initialization.md)
 2. [Spring AOP 如何实现？与AspectJ什么关系？](./doc/Spring/Spring-AOP-AspectJ.md)
 3. [Spring Boot 如何做到自动配置](./doc/Spring/How-does-SpringBoot-Work.md)
 4. [Spring 事务管理解析](./doc/Spring/Spring-Transaction.md)

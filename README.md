@@ -8,7 +8,7 @@
 5. [线上故障排查](./doc/Java/Online-problem.md)
 6. [一张表格读懂final和static](./doc/Java/Final-And-Static.md)
 7. [内存泄漏怎么办](./doc/Java/Mem-Leak.md)
-8. [一文读懂synchronized](./doc/Java/Synchronized.md)
+8. [synchronized浅析（上）](./doc/Java/Synchronized.md)
 
 ## :game_die: Java Virtual Machine
 1. [JVM 运行时数据区域](./doc/JVM/01-Runtime-Data-Area.md)

@@ -54,7 +54,7 @@ InnoDB 内核会对行数据增加三个内部属性：
 | 1 | begin; |  |
 | 2 | select * from tb where id = 1; |  |
 | 3 |  | begin; |
-| 4 |  | update tb set id = 3 where id = 1; |
+| 4 |  | update tb set name = 3 where id = 1; |
 | 5 | select * from tb where id = 1; |  |
 | 6 |  | commit;|
 | 7 | select * from tb where id = 1; |  |

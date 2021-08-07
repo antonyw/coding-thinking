@@ -33,3 +33,8 @@ HW：ISR中最小的LEO即为HW
 消息写入Leader，Follower拉取Leader，不难看出这过程中必定会有延时，有延时就会导致数据不一致。如果选出的Follower没有携带最新的消息，那么就会出现丢失消息的情况。**由此可见，我们应该选取出拥有最新进度的Follower作为Leader才不会丢失消息，也就是在ISR中的Follower。**
 
 ### 什么条件才能进入ISR集合？
+从0.9版本开始Kafka使用Broker端配置参数replica.lag.time.max.ms来做抉择，当一个Follower之后Leader时间超过该参数值时，该Follower将会被踢出ISR集合。不难看出，仅以时间来衡量“ISR门槛”是有可能出现Follower永远无法跟上Leader。在Kafka源码注释中提及了两种情况：
+
+1. Follower进程卡住，无法自主同步，比如发生频繁的Full GC
+2. Leader写入流量过大，大量的I/O导致Follower始终落后于Leader
+

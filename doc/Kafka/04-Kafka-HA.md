@@ -10,6 +10,8 @@
 ## Kafka 高可用机制的实现
 Kafka像许多分布式系统一样，依靠多副本机制实现高可用。但与其他分布式系统不同，Kafka的副本是属于分区的，一个分区内可能有一个或多个副本，其中一个是Leader副本，其余的为Follower副本。
 
+![](../../img/kafka-system.png)
+
 生产者发出的消息全部由Leader副本接收，Follower副本定时从Leader副本拉取消息。当Leader副本所在的Broker宕机时，所有Follower副本中**满足条件**的副本会被选为Leader继续提供服务。
 
 可以看出Kafka的高可用机制要解决几个问题：
@@ -38,3 +40,7 @@ HW：ISR中最小的LEO即为HW
 1. Follower进程卡住，无法自主同步，比如发生频繁的Full GC
 2. Leader写入流量过大，大量的I/O导致Follower始终落后于Leader
 
+### ISR的伸缩
+Kafka 在启动的时候会开启两个与 ISR 相关的定时任务，名称分别为“isr-expiration”和“isr-change-propagation”。isr-expiration会周期性的检查ISR集合是否需要缩小，而isr-change-propagation会周期性的检查ISR集合是否需要加入新的副本。
+
+## Leader和Follower之间如何进行同步？

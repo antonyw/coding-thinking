@@ -44,3 +44,26 @@ HW：ISR中最小的LEO即为HW
 Kafka 在启动的时候会开启两个与 ISR 相关的定时任务，名称分别为“isr-expiration”和“isr-change-propagation”。isr-expiration会周期性的检查ISR集合是否需要缩小，而isr-change-propagation会周期性的检查ISR集合是否需要加入新的副本。
 
 ## Leader和Follower之间如何进行同步？
+一条消息是如何写入Leader副本，又被Follower副本同步的，我们来看一下大体流程：
+
+1. 生产者发送消息，消息被Leader副本接收
+2. 消息写入Leader副本本地日志，并更新偏移量
+3. Follower副本向Leader副本请求同步数据
+4. Leader副本读取本地日志，并更新对应的Follower副本信息，再将结果返回给Follower副本
+5. Follower副本收到消息后，追加到本地日志，并更新偏移量
+
+某一时刻，生产者开始向Leader副本写入消息，此时Leader副本接收了5条消息后LEO=5
+
+![](../../img/KAKFA-FLOW01.png)
+
+Follower拉取到Leader中的日志消息，并且携带着Leader的HW=0，此时连个Follower各自更新本地日志。Follower1收到了3条消息，Follower2收到了4条消息。
+
+![](../../img/KAFKA-FLOW02.png)
+
+Follower再次拉取Leader消息，并携带自己的LEO，Leader取最小的LEO作为HW。此时HW=3才是被消费者可见的。
+
+![](../../img/KAFKA-FLOW03.png)
+
+Follower拉取到消息并携带Leader的HW=3，Follower各自更新本地日志和HW。
+
+![](../../img/KAFKA-FLOW04.png)

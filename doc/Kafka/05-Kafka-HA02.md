@@ -39,4 +39,6 @@ Kafka使用HW+ISR机制保证Consumer能看到的消息，一定是写入成功�
 
 看得出无法单纯通过HW来解决宕机后的数据问题，所以Kafka在0.11.0.0之后引入了Leader Epoch机制，在需要做日志截断时，以Leader Epoch作为依据而不再是HW。
 
+Leader Epoch的工作原理相当于版本号的概念，当Leader发生一次转换，Leader Epoch就会+1。同时，每个副本中还会存储一个KV，即｛LeaderEpoch: StartOffset｝，也就是说通过这个KV结构可以方便的获取到某个Leader Epoch下第一条消息的offset是多少。
 
+引入Leader Epoch机制后，Kafka在做日志截断之前会校验Leader Epoch，比如上述情况当新Follower（旧Leader）恢复之后会先发起Leader Epoch请求，新Leader会查找Follower Leader Epoch +1 的消息返回。Follower也就不需要再截断日志了。

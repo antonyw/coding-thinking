@@ -1,29 +1,27 @@
 # ThreadPool 参数详解
-## 何时使用线程池？
-- 单个任务处理时间比较短
-- 需要处理的任务数量很大
+先看一下ThreadPoolExecutor的类图，本文说到的ThreadPoolExecutor继承自AbstractExecutorService，并实现了ExecutorService接口。
 
-## 线程池有哪些优势？
-- 降低资源消耗。通过重复利用已创建的线程降低线程创建和销毁造成的消耗。
-- 提高响应速度。当任务到达时，任务可以不需要的等到线程创建就能立即执行。
-- 提高线程的可管理性。线程是稀缺资源，如果无限制的创建，不仅会消耗系统资源，还会降低系统的稳定性，使用线程池可以进行统一的分配，调优和监控。
+![](../../img/ThreadPoolExecutor.jpg)
 
-## 线程池的运行逻辑
-![](../../img/executor.png)
+下面展示一个线程池，它的核心线程数为4，最大线程数为20，线程允许最大空闲时间为3秒，并且持有一个长度为100的有界队列。
+```java
+   ThreadPoolExecutor executor = new ThreadPoolExecutor(4, 20, 
+            3, TimeUnit.SECONDS,
+            new ArrayBlockingQueue<Runnable>(100));
+```
 
-## 线程的五种状态
-1. **RUNNING：** 能接受新提交的任务，并且也能处理阻塞队列中的任务；
-2. **SHUDOWN：** 关闭状态，不再接受新提交的任务，但却可以继续处理阻塞队列中已保存的任务。在线程池处于 RUNNING 状态时，调用 shutdown()方法会使线程池进入到该状态。（finalize() 方法在执行过程中也会调用shutdown()方法进入该状态）；
-3. **STOP：** 不能接受新任务，也不处理队列中的任务，会中断正在处理任务的线程。在线程池处于 RUNNING 或 SHUTDOWN 状态时，调用 shutdownNow() 方法会使线程池进入到该状态；
-4. **TYDYING：** 如果所有的任务都已终止了，workerCount (有效线程数) 为0，线程池进入该状态后会调用terminated() 方法进入TERMINATED 状态；
-5. **TERMINATED：** 在terminated() 方法执行完后进入该状态，默认terminated()方法中什么也没有做。 进入TERMINATED的条件如下：
-- 线程池不是RUNNING状态；
-- 线程池状态不是TIDYING状态或TERMINATED状态；
-- 如果线程池状态是SHUTDOWN并且workerQueue为空；
-- workerCount为0；
-- 设置TIDYING状态成功。
-![](../../img/threadpool-status.png)
-
+在ThreadPoolExecutor中有4个构造方法，上述代码使用了其中一个。
+```java
+    // 其它的构造方法，可以自定义选择 ThreadFactory 和 RejectedExecutionHandler
+    public ThreadPoolExecutor(int corePoolSize,
+                              int maximumPoolSize,
+                              long keepAliveTime,
+                              TimeUnit unit,
+                              BlockingQueue<Runnable> workQueue) {
+        this(corePoolSize, maximumPoolSize, keepAliveTime, unit, workQueue,
+             Executors.defaultThreadFactory(), defaultHandler);
+    }
+````
 ## 线程池参数详解
 ### coreSize / maximumPoolSize
 核心线程数量，当有新任务在execute()方法提交时，会执行以下判断：
@@ -55,6 +53,59 @@
 - CallerRunsPolicy：用调用者所在的线程来执行任务；
 - DiscardOldestPolicy：丢弃阻塞队列中靠最前的任务，并执行当前任务；
 - DiscardPolicy：直接丢弃任务；
+
+## 线程池的运行逻辑
+线程池有两种使用方式，有返回值的submit方法和无返回值的execute方法。
+```java
+        // 有返回值
+        Future<Boolean> future = executor.submit(() -> productService.add(new Product()));
+        // 无返回值
+	executor.execute(() -> productService.add(new Product()));
+```
+我们继续追踪代码会发现，其实submit方法中还是调用了execute方法，所以我们先看execute方法中的逻辑，其中任务提交到线程池中的流程如下图所示。
+
+![](../../img/thread-pool-flow.png)
+
+对应这一段代码
+```java
+	int c = ctl.get();
+        if (workerCountOf(c) < corePoolSize) {
+            if (addWorker(command, true))
+                return;
+            c = ctl.get();
+        }
+        if (isRunning(c) && workQueue.offer(command)) {
+            int recheck = ctl.get();
+            if (! isRunning(recheck) && remove(command))
+                reject(command);
+            else if (workerCountOf(recheck) == 0)
+                addWorker(null, false);
+        }
+        else if (!addWorker(command, false))
+            reject(command);
+```
+
+## 线程的五种状态
+1. **RUNNING：** 能接受新提交的任务，并且也能处理阻塞队列中的任务；
+2. **SHUDOWN：** 关闭状态，不再接受新提交的任务，但却可以继续处理阻塞队列中已保存的任务。在线程池处于 RUNNING 状态时，调用 shutdown()方法会使线程池进入到该状态。（finalize() 方法在执行过程中也会调用shutdown()方法进入该状态）；
+3. **STOP：** 不能接受新任务，也不处理队列中的任务，会中断正在处理任务的线程。在线程池处于 RUNNING 或 SHUTDOWN 状态时，调用 shutdownNow() 方法会使线程池进入到该状态；
+4. **TYDYING：** 如果所有的任务都已终止了，workerCount (有效线程数) 为0，线程池进入该状态后会调用terminated() 方法进入TERMINATED 状态；
+5. **TERMINATED：** 在terminated() 方法执行完后进入该状态，默认terminated()方法中什么也没有做。 进入TERMINATED的条件如下：
+- 线程池不是RUNNING状态；
+- 线程池状态不是TIDYING状态或TERMINATED状态；
+- 如果线程池状态是SHUTDOWN并且workerQueue为空；
+- workerCount为0；
+- 设置TIDYING状态成功。
+![](../../img/threadpool-status.png)
+
+## 何时使用线程池？
+- 单个任务处理时间比较短
+- 需要处理的任务数量很大
+
+## 线程池有哪些优势？
+- 降低资源消耗。通过重复利用已创建的线程降低线程创建和销毁造成的消耗。
+- 提高响应速度。当任务到达时，任务可以不需要的等到线程创建就能立即执行。
+- 提高线程的可管理性。线程是稀缺资源，如果无限制的创建，不仅会消耗系统资源，还会降低系统的稳定性，使用线程池可以进行统一的分配，调优和监控。
 		
 ## 合理预估线程池参数
 

@@ -85,7 +85,15 @@
             reject(command);
 ```
 
-## 线程的五种状态
+## 线程池的五种状态
+```java
+    // runState is stored in the high-order bits
+    private static final int RUNNING    = -1 << COUNT_BITS;
+    private static final int SHUTDOWN   =  0 << COUNT_BITS;
+    private static final int STOP       =  1 << COUNT_BITS;
+    private static final int TIDYING    =  2 << COUNT_BITS;
+    private static final int TERMINATED =  3 << COUNT_BITS;
+```
 1. **RUNNING：** 能接受新提交的任务，并且也能处理阻塞队列中的任务；
 2. **SHUDOWN：** 关闭状态，不再接受新提交的任务，但却可以继续处理阻塞队列中已保存的任务。在线程池处于 RUNNING 状态时，调用 shutdown()方法会使线程池进入到该状态。（finalize() 方法在执行过程中也会调用shutdown()方法进入该状态）；
 3. **STOP：** 不能接受新任务，也不处理队列中的任务，会中断正在处理任务的线程。在线程池处于 RUNNING 或 SHUTDOWN 状态时，调用 shutdownNow() 方法会使线程池进入到该状态；
